@@ -34,7 +34,6 @@ cloudflared tunnel route dns "${TUNNEL_NAME}" "dev1-api.${DOMAIN}"||true
 cloudflared tunnel route dns "${TUNNEL_NAME}" "dev1-executor.${DOMAIN}"||true
 cloudflared tunnel route dns "${TUNNEL_NAME}" "dev1-jenkins.${DOMAIN}"||true
 cloudflared tunnel route dns "${TUNNEL_NAME}" "dev1-argocd.${DOMAIN}"||true
-cloudflared tunnel route dns "${TUNNEL_NAME}" "dev1-netdata.${DOMAIN}"||true
 
 echo ""
 echo "=== Nếu route DNS lỗi (domain không trên Cloudflare): ==="
@@ -43,7 +42,7 @@ echo "  dev1-api      CNAME → ${TUNNEL_ID}.cfargotunnel.com"
 echo "  dev1-executor CNAME → ${TUNNEL_ID}.cfargotunnel.com"
 echo "  dev1-jenkins  CNAME → ${TUNNEL_ID}.cfargotunnel.com"
 echo "  dev1-argocd   CNAME → ${TUNNEL_ID}.cfargotunnel.com"
-echo "  dev1-netdata  CNAME → ${TUNNEL_ID}.cfargotunnel.com"
+
 echo ""
 echo "Xong thì chạy:"
 echo "  docker compose -f ${SCRIPT_DIR}/docker-compose.yml up -d"

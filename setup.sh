@@ -35,7 +35,7 @@ bash "$SCRIPT_DIR/deploy/install-argocd.sh" || echo "  ⚠️ ArgoCD có warning
 
 echo ""
 echo "=== 4. Cài Netdata Monitor ==="
-bash "$SCRIPT_DIR/deploy/netdata/install-netdata.sh" || echo "  ⚠️ Netdata có warning nhưng vẫn ổn"
+# Netdata bị xóa
 
 echo ""
 echo "=== 5. Setup Cloudflare Tunnel ==="

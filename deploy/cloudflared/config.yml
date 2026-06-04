@@ -15,9 +15,6 @@ ingress:
   - hostname: dev1-argocd.vucongtuanduong.dpdns.org
     service: http://localhost:30566
 
-  - hostname: dev1-netdata.vucongtuanduong.dpdns.org
-    service: http://localhost:30566
-
   # Future services: thêm rule ở đây
   # - hostname: dev1-xxx.vucongtuanduong.dpdns.org
   #   service: http://localhost:31242
