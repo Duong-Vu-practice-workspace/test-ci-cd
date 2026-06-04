@@ -6,17 +6,17 @@ ingress:
     service: http://localhost:9999
 
   # K8s services via Traefik NodePort (stable, không đổi khi đổi WiFi)
- - hostname: dev1-api.vucongtuanduong.dpdns.org
- service: http://localhost:30566
+  - hostname: dev1-api.vucongtuanduong.dpdns.org
+    service: http://localhost:30566
 
- - hostname: dev1-executor.vucongtuanduong.dpdns.org
- service: http://localhost:30566
+  - hostname: dev1-executor.vucongtuanduong.dpdns.org
+    service: http://localhost:30566
 
- - hostname: dev1-argocd.vucongtuanduong.dpdns.org
- service: http://localhost:30566
+  - hostname: dev1-argocd.vucongtuanduong.dpdns.org
+    service: http://localhost:30566
 
   - hostname: dev1-netdata.vucongtuanduong.dpdns.org
-    service: http://localhost:31242
+    service: http://localhost:30566
 
   # Future services: thêm rule ở đây
   # - hostname: dev1-xxx.vucongtuanduong.dpdns.org
