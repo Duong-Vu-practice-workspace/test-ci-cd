@@ -1,5 +1,5 @@
-tunnel: dev1-web-grading
-credentials-file: /etc/cloudflared/dev1-web-grading.json
+tunnel: 57b10890-f55c-491b-baf2-8903f9b7ed2a
+credentials-file: /etc/cloudflared/57b10890-f55c-491b-baf2-8903f9b7ed2a.json
 ingress:
   # Jenkins (Docker container - direct)
   - hostname: dev1-jenkins.vucongtuanduong.dpdns.org

@@ -5,22 +5,26 @@ echo "=== Installing ArgoCD on k3s ==="
 
 k3s kubectl create namespace argocd --dry-run=client -o yaml | k3s kubectl apply -f -
 
-k3s kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+k3s kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml || true
 
 echo "Waiting for ArgoCD pods..."
 k3s kubectl wait --namespace argocd \
   --for=condition=ready pod \
   --selector=app.kubernetes.io/component=server \
-  --timeout=180s
+  --timeout=300s 2>/dev/null || true
 
 # Configure ArgoCD to allow HTTP behind reverse proxy (Traefik)
-k3s kubectl patch deployment argocd-server -n argocd --type='json' -p='[
+# Use replace on the whole args array to avoid duplicate entries on re-run
+k3s kubectl patch deployment argocd-server -n argocd --type='json' -p="[
   {
-    "op": "add",
-    "path": "/spec/template/spec/containers/0/args/-",
-    "value": "--insecure"
+    \"op\": \"replace\",
+    \"path\": \"/spec/template/spec/containers/0/args\",
+    \"value\": [\"/usr/local/bin/argocd-server\", \"--insecure\"]
   }
-]'
+]" 2>/dev/null || true
+
+# Wait for rollout to complete (triggered by patch above)
+k3s kubectl rollout status deployment argocd-server -n argocd --timeout=180s 2>/dev/null || true
 
 # Apply Ingress for ArgoCD
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
