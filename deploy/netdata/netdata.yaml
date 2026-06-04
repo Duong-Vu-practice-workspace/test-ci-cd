@@ -3,6 +3,34 @@ kind: Namespace
 metadata:
   name: netdata
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: netdata
+  namespace: netdata
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: netdata
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "nodes", "nodes/metrics", "nodes/proxy", "nodes/stats"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: netdata
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: netdata
+subjects:
+  - kind: ServiceAccount
+    name: netdata
+    namespace: netdata
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -29,6 +57,9 @@ spec:
           ports:
             - containerPort: 19999
               name: http
+          env:
+            - name: DOCKER_HOST
+              value: "unix:///var/run/docker.sock"
           resources:
             limits:
               cpu: 200m
@@ -46,6 +77,10 @@ spec:
             - name: docker
               mountPath: /var/run/docker.sock
               readOnly: true
+            - name: containerd
+              mountPath: /run/k3s/containerd/containerd.sock
+              readOnly: true
+      serviceAccountName: netdata
       volumes:
         - name: proc
           hostPath:
@@ -56,6 +91,9 @@ spec:
         - name: docker
           hostPath:
             path: /var/run/docker.sock
+        - name: containerd
+          hostPath:
+            path: /run/k3s/containerd/containerd.sock
 ---
 apiVersion: v1
 kind: Service
