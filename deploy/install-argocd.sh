@@ -24,7 +24,7 @@ k3s kubectl patch deployment argocd-server -n argocd --type='json' -p="[
 ]" 2>/dev/null || true
 
 # Wait for rollout to complete (triggered by patch above)
-k3s kubectl rollout status deployment argocd-server -n argocd --timeout=180s 2>/dev/null || true
+k3s kubectl rollout status deployment argocd-server -n argocd --timeout=120s 2>/dev/null || true
 
 # Apply Ingress for ArgoCD
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"

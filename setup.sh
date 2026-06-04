@@ -34,12 +34,16 @@ echo "=== 3. Cài ArgoCD trên k3s ==="
 bash "$SCRIPT_DIR/deploy/install-argocd.sh" || echo "  ⚠️ ArgoCD có warning nhưng vẫn ổn"
 
 echo ""
-echo "=== 4. Setup Cloudflare Tunnel ==="
+echo "=== 4. Cài Netdata Monitor ==="
+bash "$SCRIPT_DIR/deploy/netdata/install-netdata.sh" || echo "  ⚠️ Netdata có warning nhưng vẫn ổn"
+
+echo ""
+echo "=== 5. Setup Cloudflare Tunnel ==="
 bash "$SCRIPT_DIR/deploy/cloudflared/setup-tunnel.sh" || echo "  ⚠️ Tunnel đã tồn tại, skip"
 docker compose -f "$SCRIPT_DIR/deploy/cloudflared/docker-compose.yml" up -d
 
 echo ""
-echo "=== 5. Tạo namespace + secret + ArgoCD App ==="
+echo "=== 6. Tạo namespace + secret + ArgoCD App ==="
 bash "$SCRIPT_DIR/deploy/setup-namespace.sh" || echo "  ⚠️ Namespace/App có thể đã tồn tại"
 
 echo ""
