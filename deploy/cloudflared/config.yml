@@ -1,19 +1,19 @@
-tunnel: 57b10890-f55c-491b-baf2-8903f9b7ed2a
-credentials-file: /etc/cloudflared/57b10890-f55c-491b-baf2-8903f9b7ed2a.json
+tunnel: 3b0d7940-ebf3-4aed-8d62-68514f0fe3d5
+credentials-file: /etc/cloudflared/3b0d7940-ebf3-4aed-8d62-68514f0fe3d5.json
 ingress:
   # Jenkins (Docker container - direct)
   - hostname: dev1-jenkins.vucongtuanduong.dpdns.org
     service: http://localhost:9999
 
   # K8s services via Traefik NodePort (stable, không đổi khi đổi WiFi)
-  - hostname: dev1-api.vucongtuanduong.dpdns.org
-    service: http://localhost:31242
+ - hostname: dev1-api.vucongtuanduong.dpdns.org
+ service: http://localhost:30566
 
-  - hostname: dev1-executor.vucongtuanduong.dpdns.org
-    service: http://localhost:31242
+ - hostname: dev1-executor.vucongtuanduong.dpdns.org
+ service: http://localhost:30566
 
-  - hostname: dev1-argocd.vucongtuanduong.dpdns.org
-    service: http://localhost:31242
+ - hostname: dev1-argocd.vucongtuanduong.dpdns.org
+ service: http://localhost:30566
 
   # Future services: thêm rule ở đây
   # - hostname: dev1-xxx.vucongtuanduong.dpdns.org
