@@ -32,7 +32,6 @@ echo ""
 echo "=== Route DNS từng subdomain ==="
 cloudflared tunnel route dns "${TUNNEL_NAME}" "dev1-api.${DOMAIN}"||true
 cloudflared tunnel route dns "${TUNNEL_NAME}" "dev1-executor.${DOMAIN}"||true
-cloudflared tunnel route dns "${TUNNEL_NAME}" "dev1-jenkins.${DOMAIN}"||true
 cloudflared tunnel route dns "${TUNNEL_NAME}" "dev1-argocd.${DOMAIN}"||true
 
 echo ""
@@ -40,7 +39,7 @@ echo "=== Nếu route DNS lỗi (domain không trên Cloudflare): ==="
 echo "Thêm CNAME records tại DNS provider (dpdns.org):"
 echo "  dev1-api      CNAME → ${TUNNEL_ID}.cfargotunnel.com"
 echo "  dev1-executor CNAME → ${TUNNEL_ID}.cfargotunnel.com"
-echo "  dev1-jenkins  CNAME → ${TUNNEL_ID}.cfargotunnel.com"
+
 echo "  dev1-argocd   CNAME → ${TUNNEL_ID}.cfargotunnel.com"
 
 echo ""

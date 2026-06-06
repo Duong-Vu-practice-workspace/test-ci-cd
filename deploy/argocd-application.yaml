@@ -6,8 +6,13 @@ metadata:
 spec:
   project: default
   source:
+    path: .
     repoURL: https://github.com/Duong-Vu-practice-workspace/web-programming-grading-config-test1.git
     targetRevision: main
+    helm:
+      valueFiles:
+        - values.yaml
+        - values-stg.yaml
     path: .
   destination:
     server: https://kubernetes.default.svc

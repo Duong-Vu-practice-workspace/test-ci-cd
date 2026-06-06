@@ -371,13 +371,13 @@ docker system prune -a -f
 docker exec jenkins rm -rf /root/.m2/repository
 ```
 
-## Debug Jenkins build
+## Debug GitHub Actions build
 
-1. Vào Jenkins → chọn build → **Console Output**
+1. Vào GitHub repo → **Actions** tab → chọn workflow run
 2. Đọc log từ dưới lên, lỗi thường ở cuối
 3. Các lỗi thường gặp:
-   - `permission denied` → Docker socket issue (fix: rebuild Jenkins image)
-   - `unauthorized` → Sai credential Docker Hub (fix: update username/password)
+   - `permission denied` → Docker socket issue
+   - `unauthorized` → Sai credential Docker Hub
    - `Author identity unknown` → Thiếu git config (fix: thêm vào Jenkinsfile)
    - `port already allocated` → Container cũ chưa xóa (fix: `docker rm -f jenkins`)
 
@@ -439,4 +439,38 @@ services:
   service: http://localhost:31242
 ```
 
-**5.** Push lên GitHub → Jenkins tự build → ArgoCD auto-sync
+**5.** Push lên GitHub → ArgoCD auto-sync
+
+---
+
+## 🔧 Dọn dẹp image cũ trong k3s
+
+Khi tag image thay đổi, image cũ (khác `latest` và khác tag hiện tại trong `values-stg.yaml`) vẫn nằm trong k3s. Chạy script này để xóa:
+
+```bash
+# Xem tag hiện tại trong config repo
+grep 'tag:' /tmp/config-repo/values-stg.yaml
+
+# Liệt kê tất cả image web-grading
+sudo k3s crictl images | grep web-grading
+
+# Xoá image cũ (tag không phải latest và không phải tag hiện tại)
+# Lấy tag hiện tại trước:
+CURRENT_TAG=$(grep 'tag:' /tmp/config-repo/values-stg.yaml | awk '{print $2}' | tr -d '"')
+# Xoá các image cũ:
+sudo k3s crictl images --output json | python3 -c "
+import json, sys, subprocess
+current_tag = '$CURRENT_TAG'
+data = json.load(sys.stdin)
+for img in data.get('images', []):
+    for repo_tag in img.get('repoTags', []):
+        if 'web-grading' not in repo_tag:
+            continue
+        tag = repo_tag.rsplit(':', 1)[1] if ':' in repo_tag else 'latest'
+        if tag == current_tag or tag == 'latest':
+            continue
+        print(f'Xoá: {repo_tag}')
+        subprocess.run(['sudo', 'k3s', 'crictl', 'rmi', img['id']])
+"
+```
+

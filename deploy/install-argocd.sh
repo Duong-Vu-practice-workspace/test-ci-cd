@@ -11,7 +11,7 @@ echo "Waiting for ArgoCD pods..."
 k3s kubectl wait --namespace argocd \
   --for=condition=ready pod \
   --selector=app.kubernetes.io/component=server \
-  --timeout=300s 2>/dev/null || true
+  --timeout=120s 2>/dev/null || true
 
 # Configure ArgoCD to allow HTTP behind reverse proxy (Traefik)
 # Use replace on the whole args array to avoid duplicate entries on re-run
@@ -24,7 +24,7 @@ k3s kubectl patch deployment argocd-server -n argocd --type='json' -p="[
 ]" 2>/dev/null || true
 
 # Wait for rollout to complete (triggered by patch above)
-k3s kubectl rollout status deployment argocd-server -n argocd --timeout=120s 2>/dev/null || true
+k3s kubectl rollout status deployment argocd-server -n argocd 2>/dev/null || true
 
 # Apply Ingress for ArgoCD
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"

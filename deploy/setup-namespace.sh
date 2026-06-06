@@ -7,7 +7,7 @@ PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 echo "=== Creating web-grading namespace ==="
 k3s kubectl create namespace web-grading --dry-run=client -o yaml | k3s kubectl apply -f -
 
-ENV_FILE="$PROJECT_DIR/backend/web_programming_grading/.env"
+ENV_FILE="$PROJECT_DIR/.env"
 echo "=== Creating secrets from $ENV_FILE ==="
 if [ -f "$ENV_FILE" ]; then
   DB_URL=$(grep -m1 '^DB_URL=' "$ENV_FILE" | cut -d= -f2-)
