@@ -1,0 +1,20 @@
+tempo:
+  search:
+    enabled: true
+  storage:
+    trace:
+      backend: local
+      local:
+        path: /var/tempo/traces
+  ingester:
+    max_block_duration: 5m
+  querier:
+    max_concurrent_queries: 2
+  retention: 168h
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4317
+        http:
+          endpoint: 0.0.0.0:4318

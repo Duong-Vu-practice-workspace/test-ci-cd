@@ -1,0 +1,46 @@
+prometheus:
+  prometheusSpec:
+    retention: 7d
+    resources:
+      requests:
+        memory: 512Mi
+        cpu: 200m
+      limits:
+        memory: 1Gi
+        cpu: 500m
+    additionalScrapeConfigs:
+      - job_name: opentelemetry-collector
+        scrape_interval: 15s
+        static_configs:
+          - targets:
+              - otel-collector.observability.svc:8889
+
+alertmanager:
+  enabled: false
+
+grafana:
+  enabled: true
+  adminPassword: admin
+  ingress:
+    enabled: false
+  service:
+    type: NodePort
+    nodePort: 30300
+  additionalDataSources:
+    - name: Loki
+      type: loki
+      url: http://loki.observability.svc:3100
+      access: proxy
+      isDefault: false
+    - name: Tempo
+      type: tempo
+      url: http://tempo.observability.svc:3200
+      access: proxy
+      isDefault: false
+      jsonData:
+        tracesToMetrics:
+          datasourceUid: prometheus
+        tracesToLogs:
+          datasourceUid: loki
+        serviceMap:
+          datasourceUid: prometheus

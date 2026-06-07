@@ -1,0 +1,64 @@
+deploymentMode: SingleBinary
+
+loki:
+  commonConfig:
+    replication_factor: 1
+  storage:
+    type: filesystem
+  schemaConfig:
+    configs:
+      - from: 2024-01-01
+        store: tsdb
+        object_store: filesystem
+        schema: v13
+        index:
+          prefix: index_
+          period: 24h
+  ingester:
+    chunk_encoding: snappy
+  tracing:
+    enabled: true
+  querier:
+    max_concurrent: 2
+  compactor:
+    working_directory: /var/loki/compactor
+    retention_enabled: true
+  limits_config:
+    retention_period: 168h
+
+singleBinary:
+  replicas: 1
+
+read:
+  replicas: 0
+
+write:
+  replicas: 0
+
+backend:
+  replicas: 0
+
+promtail:
+  enabled: true
+  config:
+    snippets:
+      scrapeConfigs: |
+        - job_name: kubernetes
+          kubernetes_sd_configs:
+            - role: pod
+          relabel_configs:
+            - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+              target_label: app
+            - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_instance]
+              target_label: instance
+            - source_labels: [__meta_kubernetes_namespace]
+              target_label: namespace
+            - source_labels: [__meta_kubernetes_pod_container_name]
+              target_label: container
+            - action: replace
+              replacement: /var/log/pods/$1/*/*.log
+              separator: /
+              source_labels:
+                - __meta_kubernetes_pod_uid
+                - __meta_kubernetes_pod_container_name
+              target_label: __path__

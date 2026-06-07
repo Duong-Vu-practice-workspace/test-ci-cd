@@ -42,7 +42,15 @@ else
 fi
 
 echo ""
-echo "=== 4. Xóa ArgoCD + ứng dụng trên k3s ==="
+echo "=== 4. Xóa Observability stack ==="
+helm uninstall kube-prometheus-stack -n observability 2>/dev/null && echo " ✗ kube-prometheus-stack"||echo " - không có"
+helm uninstall loki -n observability 2>/dev/null && echo " ✗ loki"||echo " - không có"
+helm uninstall tempo -n observability 2>/dev/null && echo " ✗ tempo"||echo " - không có"
+helm uninstall otel-collector -n observability 2>/dev/null && echo " ✗ otel-collector"||echo " - không có"
+kubectl delete namespace observability --ignore-not-found 2>/dev/null && echo " ✗ namespace observability"||echo " - không có"
+
+echo ""
+echo "=== 5. Xóa ArgoCD + ứng dụng trên k3s ==="
 k3s kubectl delete namespace argocd --ignore-not-found 2>/dev/null && echo "  ✗ ArgoCD" || echo "  - không có"
 k3s kubectl delete namespace web-grading --ignore-not-found 2>/dev/null && echo "  ✗ web-grading" || echo "  - không có"
 

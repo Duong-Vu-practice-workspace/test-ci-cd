@@ -1,0 +1,52 @@
+mode: deployment
+
+image:
+  repository: otel/opentelemetry-collector-contrib
+  tag: 0.120.0
+
+presets:
+  logsCollection:
+    enabled: true
+  kubernetesAttributes:
+    enabled: true
+  hostMetrics:
+    enabled: true
+
+config:
+  exporters:
+    otlp:
+      endpoint: tempo.observability.svc:4317
+      tls:
+        insecure: true
+    prometheus:
+      endpoint: 0.0.0.0:8889
+      resource_to_telemetry_conversion:
+        enabled: true
+
+  processors:
+    batch:
+      timeout: 1s
+      send_batch_size: 1024
+
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4317
+        http:
+          endpoint: 0.0.0.0:4318
+
+  service:
+    pipelines:
+      traces:
+        receivers: [otlp]
+        processors: [batch]
+        exporters: [otlp]
+      metrics:
+        receivers: [otlp]
+        processors: [batch]
+        exporters: [prometheus]
+      logs:
+        receivers: [otlp]
+        processors: [batch]
+        exporters: [otlp]

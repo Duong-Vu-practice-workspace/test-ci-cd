@@ -1,31 +1,25 @@
 #!/usr/bin/env bash
-set -uo pipefail
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+NAMESPACE="${1:-web-grading}"
 
-echo "=== Creating web-grading namespace ==="
-k3s kubectl create namespace web-grading --dry-run=client -o yaml | k3s kubectl apply -f -
+echo "=== Tạo namespace ${NAMESPACE} ==="
+kubectl create namespace "${NAMESPACE}" --dry-run=client -o yaml | kubectl apply -f -
 
-ENV_FILE="$PROJECT_DIR/.env"
-echo "=== Creating secrets from $ENV_FILE ==="
-if [ -f "$ENV_FILE" ]; then
-  DB_URL=$(grep -m1 '^DB_URL=' "$ENV_FILE" | cut -d= -f2-)
-  DB_USERNAME=$(grep -m1 '^DB_USERNAME=' "$ENV_FILE" | cut -d= -f2-)
-  DB_PASSWORD=$(grep -m1 '^DB_PASSWORD=' "$ENV_FILE" | cut -d= -f2-)
-
-  k3s kubectl create secret generic db-secret \
-    --namespace web-grading \
-    --from-literal=DB_URL="${DB_URL}" \
-    --from-literal=DB_USERNAME="${DB_USERNAME}" \
-    --from-literal=DB_PASSWORD="${DB_PASSWORD}" \
-    --dry-run=client -o yaml | k3s kubectl apply -f -
-else
-  echo "WARNING: .env file not found at $ENV_FILE, tạo bằng tay:"
-  echo "  k3s kubectl create secret generic db-secret -n web-grading"
-  echo "    --from-literal=DB_URL=... --from-literal=DB_USERNAME=... --from-literal=DB_PASSWORD=..."
+echo "=== Tạo secret từ .env ==="
+if [ -f "${SCRIPT_DIR}/../.env" ]; then
+  set -o allexport
+  source "${SCRIPT_DIR}/../.env"
+  set +o allexport
 fi
 
-echo ""
+kubectl create secret generic web-grading-secret \
+  --namespace "${NAMESPACE}" \
+  --from-literal=GITHUB_TOKEN="${GITHUB_TOKEN:-}" \
+  --from-literal=EXECUTOR_AUTH_TOKEN="${EXECUTOR_AUTH_TOKEN:-}" \
+  --from-literal=API_AUTH_TOKEN="${API_AUTH_TOKEN:-}" \
+  --dry-run=client -o yaml | kubectl apply -f -
+
 echo "=== Apply ArgoCD Application ==="
-k3s kubectl apply -f "$SCRIPT_DIR/argocd-application.yaml"
+kubectl apply -f "$SCRIPT_DIR/argocd-application.yaml"
